@@ -97,4 +97,61 @@ class TestController extends Controller
         $count = Redis::incr($redis_key);
         echo 'count: '.$count;
     }
+
+    public function postman()
+    {
+        echo __METHOD__;
+    }
+
+    public function postman()
+    {
+        //获取用户标识
+        $token = $_SERVER['HTTP_TOKEN'];
+        // 当前url
+        $request_uri = $_SERVER['REQUEST_URI'];
+
+        $url_hash = md5($token . $request_uri);
+
+
+        //echo 'url_hash: ' .  $url_hash;echo '</br>';
+        $key = 'count:url:'.$url_hash;
+        //echo 'Key: '.$key;echo '</br>';
+
+        //检查 次数是否已经超过限制
+        $count = Redis::get($key);
+        echo "当前接口访问次数为：". $count;echo '</br>';
+
+        if($count >= 5){
+            $time = 10;     // 时间秒
+            echo "请勿频繁请求接口, $time 秒后重试";
+            Redis::expire($key,$time);
+            die;
+        }
+
+
+        // 访问数 +1
+        $count = Redis::incr($key);
+        echo 'count: '.$count;
+
+    }
+
+    public function md5()
+    {
+        $data = "Wangdxvm";      //要发送的数据
+        $key = "1998";           //计算签名的key
+
+        //计算签名  MD5($data . $key)
+//        $signature = 'sdlfkjsldfkjsfd';
+        $signature = md5($data . $key);
+
+        echo "待发送的数据：" . $data;echo '</br>';
+        echo "签名：" . $signature;echo '</br>';
+
+        //发送数据
+        $url = "http://passport.1905.com/test/check?data=" . $data . '&signature=' . $signature;
+        echo $url;echo '<hr>';
+
+        $response = file_get_contents($url);
+        echo $response;
+    }
 }

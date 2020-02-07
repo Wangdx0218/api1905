@@ -17,8 +17,8 @@ class TestController extends Controller
         $sign = '';
         $timestamp = date('Y-m-d H:i:s');
         $version = '1.0';
-        $return_url = 'http://19905api.comcto.com/test/alipay/return';
-        $notify_url = 'http://19905api.comcto.com/test/alipay/notify';
+        $return_url = 'http://1905api.comcto.com/test/alipay/return';
+        $notify_url = 'http://1905api.comcto.com/test/alipay/notify';
         $biz_content = '';
 
         // 请求参数
@@ -82,5 +82,77 @@ class TestController extends Controller
         //发送GET请求
         //echo $url;die;
         header("Location:".$url);
+    }
+
+    /**
+     * 验证签名
+     */
+    public function sign1()
+    {
+        echo '<pre>';print_r($_GET);echo '</pre>';
+
+        $sign = $_GET['sign'];      //base64签名
+        unset($_GET['sign']);
+        //字典序排序
+        ksort($_GET);
+        echo '<pre>';print_r($_GET);echo '</pre>';
+
+        //  拼接  待签名 字符串
+        $str = "";
+        foreach ($_GET as $k=>$v)
+        {
+            $str .= $k . '=' . $v . '&';
+        }
+
+        $str = rtrim($str,'&');
+        echo $str;echo '<hr>';
+
+        //使用公钥验签
+        $pub_key = file_get_contents(storage_path('keys/pubkey2'));
+        $status = openssl_verify($str,base64_decode($sign),$pub_key,OPENSSL_ALGO_SHA256);
+        var_dump($status);
+
+        if ($status)    //验证通过
+        {
+            echo "success";
+        }else{
+            echo "验签失败";
+        }
+    }
+
+    public  function sign2()
+    {
+        // 接收参数
+        echo '<pre>';print_r($_GET);echo '</pre>';
+
+        // 保存sign
+        $ign = $_GET['sign'];
+        echo "发送端的签名：". $sign1;echo '</br>';
+        unset($_GET['sign']);
+
+        ksort($_GET);
+
+        echo '<pre>';print_r($_GET);echo '</pre>';
+        //拼接待签名字符串
+        $str = "";
+        foreach ($_GET as $k=>$v)
+        {
+            $str .= $k. '=' . $v . '&';
+        }
+
+        $str = rtrim($str);
+        echo "待签名字符串：". $str;
+
+        //计算签名
+        $sign2 = sha1($str . $sign_token);
+        echo '</br>';
+        echo "接收端计算的签名：" . $sign2;
+
+        echo '</br>';
+        if ($sign1 === $sign2){
+            echo "验签成功";
+        }else{
+            echo "验签失败";
+        }
     }
 }
