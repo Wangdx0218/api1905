@@ -36,3 +36,6 @@ Route::get('/test/postman','Api\TestController@postman');
 
 //签名
 Route::get('/test/md5','Api\TestController@md5');
+
+//post验签
+Route::get('/test/sign','Api\TestController@sign');
