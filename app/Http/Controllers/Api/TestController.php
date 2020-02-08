@@ -212,4 +212,25 @@ class TestController extends Controller
         echo $response;
 
     }
+
+    public function encrypt()
+    {
+        $data = "helloworld";
+
+        echo "原文：" . $data;echo '</br>';
+        $method = 'AES-256-CBC';
+        $key = 'zhang';
+        $iv = 'WUSD8796IDjhkchd';
+
+        $enc_data = openssl_encrypt($data,$method,$key,OPENSSL_RAW_DATA,$iv);
+        echo "加密后密文：" . $enc_data;echo '</br>';
+        echo '<hr>';
+        echo '解密：';echo '<br>';
+
+        //发送加密数据
+        $url = "http://passport.1905.com/decrypt?data=".urlencode(base64_encode($enc_data));
+        echo $url;echo '<br>';
+        $response = file_get_contents($url);
+        echo $response;
+    }
 }
