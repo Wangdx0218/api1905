@@ -174,7 +174,7 @@ class TestController extends Controller
 
         // post 表单（form-data）发送数据
         $client = new Client();
-        $url = 'http://passport.1905.com/test/check2';
+        $url = 'http://passport.1905.com/test/check1';
         $response = $client->request("POST",$url,[
             "form_params"   => [
                 "data"  => $data_json,
@@ -185,6 +185,31 @@ class TestController extends Controller
         //接收服务器端响应的数据
         $response_data = $response->getBody();
         echo $response_data;
+
+    }
+
+    public function md52()
+    {
+        //待签名数据
+        $qian="wang";
+        echo "原始数据 ：".$qian;echo '</br>';
+        //计算签名
+        $path=storage_path('keys/privkey2');
+        $pkeyid=openssl_pkey_get_private("file://".$path);
+
+        openssl_sign($qian,$signature,$pkeyid);
+        openssl_free_key($pkeyid);
+        //var_dump($signature);
+        echo "原数据签名后 ：".$signature;echo '</br>';
+
+        //base64编码
+        $sign_str=base64_encode($signature);
+        echo "base64_encode后数据 ：".$sign_str;echo '<hr>';
+
+        $url="http://passport.1905.com/test/check2?".'qian='.$qian.'&sign='.urlencode($sign_str);
+        //echo $url;
+        $response=file_get_contents($url);
+        echo $response;
 
     }
 }
