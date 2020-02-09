@@ -194,7 +194,7 @@ class TestController extends Controller
         $qian="wang";
         echo "原始数据 ：".$qian;echo '</br>';
         //计算签名
-        $path=storage_path('keys/privkey2');
+        $path=storage_path('keys/app_priv');
         $pkeyid=openssl_pkey_get_private("file://".$path);
 
         openssl_sign($qian,$signature,$pkeyid);
@@ -219,7 +219,7 @@ class TestController extends Controller
 
         echo "原文：" . $data;echo '</br>';
         $method = 'AES-256-CBC';
-        $key = 'zhang';
+        $key = 'wang';
         $iv = 'WUSD8796IDjhkchd';
 
         $enc_data = openssl_encrypt($data,$method,$key,OPENSSL_RAW_DATA,$iv);
@@ -236,7 +236,7 @@ class TestController extends Controller
 
     public function rsa()
     {
-        $priv_key = file_get_contents(storage_path('keys/privkey2'));
+        $priv_key = file_get_contents(storage_path('keys/app_priv'));
 
         $data = "helloworld";
         echo "待加密数据：" . $data;echo '</br>';
