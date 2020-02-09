@@ -45,3 +45,6 @@ Route::get('/test/md52','Api\TestController@md52');
 
 //对称加密
 Route::get('/encrypt','Api\TestController@encrypt');
+
+//非对称加密
+Route::get('/rsa','Api\TestController@rsa');
